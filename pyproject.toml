@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "ommnia-permission-tree"
+version = "0.1.0"
+description = "A simple data structure to manage permissions."
+authors = ["Luke A.C.A. Rieff - Ommnia Systems"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+more-itertools = "^10.3.0"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
