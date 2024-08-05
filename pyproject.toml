@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ommnia-permission-tree"
-version = "0.1.0"
+version = "1.0.2"
 description = "A simple data structure to manage permissions."
 authors = ["Luke A.C.A. Rieff - Ommnia Systems"]
 readme = "README.md"
