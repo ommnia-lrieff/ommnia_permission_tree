@@ -27,7 +27,7 @@ class PermissionTree:
             result: PermissionTreeData = {}
 
             for key in left:
-                if result[key] == {}:
+                if key in result and result[key] == {}:
                     continue
 
                 if key not in right:
@@ -41,7 +41,7 @@ class PermissionTree:
                 result[key] = inner_union(left[key], right[key])
 
             for key in right:
-                if result[key] == {}:
+                if key in result and result[key] == {}:
                     continue
 
                 if key not in left:
