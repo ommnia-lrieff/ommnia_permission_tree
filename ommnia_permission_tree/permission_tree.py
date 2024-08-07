@@ -27,28 +27,28 @@ class PermissionTree:
             result: PermissionTreeData = {}
 
             for key in left:
-                if key in result and result[key] == {}:
+                if key in result and len(result[key]) == 0:
                     continue
 
                 if key not in right:
                     result[key] = left[key]
                     continue
 
-                if right[key] == {}:
+                if len(right[key]) == 0:
                     result[key] = {}
                     continue
 
                 result[key] = inner_union(left[key], right[key])
 
             for key in right:
-                if key in result and result[key] == {}:
+                if key in result and len(result[key]) == 0:
                     continue
 
                 if key not in left:
                     result[key] = right[key]
                     continue
 
-                if left[key] == {}:
+                if len(left[key]) == 0:
                     result[key] = {}
                     continue
 
@@ -275,12 +275,12 @@ class PermissionTree:
 
                 # If it is an empty dict in a, then always return true, since it
                 #  will match all children.
-                if a[key] == {}:
+                if len(a[key]) == 0:
                     continue
 
                 # If the B key is empty, and the a key is not empty, then simply
                 #  return False since it is not sure if it matches all children.
-                if b[key] == {}:
+                if len(b[key]) == 0:
                     return False
 
                 if not inner_contains(a[key], b[key]):
@@ -313,7 +313,7 @@ class PermissionTree:
                     continue
 
                 # Copy the entire contents of the right side if the key in the left side is empty
-                if left[key] == {}:
+                if len(left[key]) == 0:
                     result[key] = right[key]
                     continue
 
@@ -335,7 +335,7 @@ class PermissionTree:
         def inner_to_strings(
             data: PermissionTreeData, segments: List[str]
         ) -> Generator[str, None, None]:
-            if data == {} and len(segments) > 0:
+            if len(data) == 0 and len(segments) > 0:
                 yield ".".join(segments)
 
             for key in data:
