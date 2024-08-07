@@ -27,6 +27,9 @@ class PermissionTree:
             result: PermissionTreeData = {}
 
             for key in left:
+                if result[key] == {}:
+                    continue
+
                 if key not in right:
                     result[key] = left[key]
                     continue
@@ -38,6 +41,9 @@ class PermissionTree:
                 result[key] = inner_union(left[key], right[key])
 
             for key in right:
+                if result[key] == {}:
+                    continue
+
                 if key not in left:
                     result[key] = right[key]
                     continue
@@ -329,7 +335,7 @@ class PermissionTree:
         def inner_to_strings(
             data: PermissionTreeData, segments: List[str]
         ) -> Generator[str, None, None]:
-            if data == {}:
+            if data == {} and len(segments) > 0:
                 yield ".".join(segments)
 
             for key in data:
