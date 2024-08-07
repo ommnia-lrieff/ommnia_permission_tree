@@ -143,6 +143,10 @@ class PermissionTree:
                 data = data[segment]
                 continue
 
+            # If a high-level permission is already assigned, ignore the current.
+            if len(data[segment]) == 0:
+                return
+
             # If last segment, overrule nested permissions by assigning a map.
             if last:
                 data[segment] = {}
