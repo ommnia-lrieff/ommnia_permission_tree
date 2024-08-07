@@ -196,6 +196,8 @@ class PermissionTree:
             bool: True if the permission was successfully revoked, False otherwise.
         """
 
+        revoked: bool = False
+
         def inner_revoke(data: PermissionTreeData, remaining: str) -> bool:
             
             try:
@@ -214,6 +216,7 @@ class PermissionTree:
             #  parent.
             if len(remaining) == 0:
                 del data[segment]
+                revoked = True
                 return len(data) == 0
             
             # Recurse deeper, and if the deeper recursion returned true, then delete it from the
@@ -225,7 +228,9 @@ class PermissionTree:
             # Return false since we did not delete anything.
             return False
 
-        return inner_revoke(self._data, permission)
+        _ = inner_revoke(self._data, permission)
+
+        return revoked
 
     def revoke_any(self, permissions: Iterable[str]) -> bool:
         """
