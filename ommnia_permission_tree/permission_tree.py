@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Dict, Generator, Iterable, List, Optional, ValuesView
+from typing import Dict, Generator, Iterable, List, Optional, Tuple, ValuesView
 from more_itertools import peekable
 
 
@@ -196,12 +196,10 @@ class PermissionTree:
             bool: True if the permission was successfully revoked, False otherwise.
         """
 
-        revoked: bool = False
-
-        def inner_revoke(data: PermissionTreeData, remaining: str) -> bool:
-            
+        def inner_revoke(data: PermissionTreeData, remaining: str) -> Tuple[bool, bool]:
             try:
-                segment, remaining = remaining.split(".", 2)
+                index: int = remaining.index(".")
+                segment, remaining = remaining[:index], remaining[index+1:]
             except ValueError:
                 segment = remaining
                 remaining = ""
@@ -209,26 +207,26 @@ class PermissionTree:
             # If the segment is not in the data, then we do not match anything, thus
             #  we will not remove anything.
             if segment not in data:
-                return False
+                return False, False
             
             # If there is nothing remaining, we're in the last segment, delete the permission
             #  and it's children, then return whether or not it was the only permission in it's
             #  parent.
             if len(remaining) == 0:
                 del data[segment]
-                revoked = True
-                return len(data) == 0
+                return len(data) == 0, True
             
             # Recurse deeper, and if the deeper recursion returned true, then delete it from the
             #  data map, then return whether or not it was the only child in it's parent.
-            if inner_revoke(data[segment], remaining):
+            empty, revoked = inner_revoke(data[segment], remaining)
+            if empty:
                 del data[segment]
-                return len(data) == 0
+                return len(data) == 0, revoked
             
             # Return false since we did not delete anything.
-            return False
+            return False, revoked
 
-        _ = inner_revoke(self._data, permission)
+        _, revoked = inner_revoke(self._data, permission)
 
         return revoked
 
