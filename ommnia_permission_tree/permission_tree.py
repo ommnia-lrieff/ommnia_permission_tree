@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Dict, Generator, Iterable, List, Optional
+from typing import Dict, Generator, Iterable, List, Optional, ValuesView
 from more_itertools import peekable
 
 
@@ -196,21 +196,36 @@ class PermissionTree:
             bool: True if the permission was successfully revoked, False otherwise.
         """
 
-        segments: List[str] = permission.split(".")
-        data: PermissionTreeData = self._data
-
-        for segment in segments:
+        def inner_revoke(data: PermissionTreeData, remaining: str) -> bool:
+            
+            try:
+                segment, remaining = remaining.split(".", 2)
+            except ValueError:
+                segment = remaining
+                remaining = ""
+            
+            # If the segment is not in the data, then we do not match anything, thus
+            #  we will not remove anything.
             if segment not in data:
                 return False
-
-            last: bool = segment == segments[-1]
-            if last:
+            
+            # If there is nothing remaining, we're in the last segment, delete the permission
+            #  and it's children, then return whether or not it was the only permission in it's
+            #  parent.
+            if len(remaining) == 0:
                 del data[segment]
-                break
+                return len(data) == 0
+            
+            # Recurse deeper, and if the deeper recursion returned true, then delete it from the
+            #  data map, then return whether or not it was the only child in it's parent.
+            if inner_revoke(data[segment], remaining):
+                del data[segment]
+                return len(data) == 0
+            
+            # Return false since we did not delete anything.
+            return False
 
-            data = data[segment]
-
-        return True
+        return inner_revoke(self._data, permission)
 
     def revoke_any(self, permissions: Iterable[str]) -> bool:
         """
